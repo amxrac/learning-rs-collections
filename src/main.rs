@@ -41,25 +41,26 @@ fn calc(nums: &mut Vec<i32>) {
 }
 
 fn pig_latin(s: &str) {
-    let consonants = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'];
-    let vowels = ['a', 'e', 'i', 'o', 'u'];
     let words: Vec<&str> = s.split_whitespace().collect();
     let mut modified_words: Vec<String> = Vec::new();
 
     for word in &words {
-        if consonants.contains(&word.chars().next().unwrap()) {
-            let mut word_slice = String::from(word[1..].to_string());
-            let mut new_word = String::from(word[0..1].to_string());
-
-
-            word_slice.push_str(&new_word);
-            word_slice.push_str("ay");
-            modified_words.push(word_slice);
-        }
-        else if vowels.contains(&word.chars().next().unwrap()) {
-            let mut new_word = String::from(word.to_string());
-            new_word.push_str("hay");
-            modified_words.push(new_word);
+        match word.chars().next() {
+            Some(c) if "aeiou".contains(c) => {
+                let mut new_word = word.to_string();
+                    new_word.push_str("hay");
+                    modified_words.push(new_word);
+            }
+            Some(c) if "bcdfghjklmnpqrstvwxyz".contains(c) => {
+                let first_char = word.chars().next().unwrap();
+                let rest = &word[first_char.len_utf8()..];
+                let result = format!("{}{}{}", rest, first_char, "ay");
+                modified_words.push(result);
+            }
+            Some(_) => {
+                modified_words.push(word.to_string());
+            }
+            None => {}
         }
     }
     println!("{:?}", modified_words);
